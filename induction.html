@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Doorways to Change — Book a session</title>
+<meta name="description" content="A quiet place to book a hypnotherapy session in southern New Hampshire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --ink:#05060B;
+  --deep:#0B0E1A;
+  --gold:#F2C078;
+  --gold-hi:#FFE3A8;
+  --rose:#D98A8A;
+  --text:#E8E1D6;
+  --text-dim:rgba(232,225,214,.62);
+  --text-faint:rgba(232,225,214,.38);
+  --line:rgba(242,192,120,.16);
+  --line-soft:rgba(232,225,214,.10);
+  --panel:rgba(9,12,22,.66);
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --slow:1.6s;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+body.is-booking{overflow:auto}
+
+/* ============================================================
+   FIELD (webgl canvas + css fallback)
+   ============================================================ */
+#field{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+#fallback{
+  position:fixed;inset:0;z-index:0;display:none;
+  background:
+    radial-gradient(60vmax 60vmax at 50% 44%, rgba(242,192,120,.20), rgba(242,192,120,.05) 38%, transparent 66%),
+    radial-gradient(90vmax 70vmax at 50% 50%, #0B0E1A, #05060B 72%);
+  transition:filter 2.4s var(--ease), opacity 2.4s var(--ease);
+}
+body.no-webgl #fallback{display:block}
+body.no-webgl #field{display:none}
+body.no-webgl.at-depth #fallback{filter:brightness(.42) saturate(.8)}
+
+/* ============================================================
+   STAGES
+   ============================================================ */
+main{position:relative;z-index:2}
+.stage{
+  position:fixed;inset:0;
+  display:grid;place-items:center;
+  padding:clamp(22px,5vw,64px);
+  padding-top:max(clamp(22px,5vw,64px),env(safe-area-inset-top));
+  padding-bottom:max(clamp(22px,5vw,64px),env(safe-area-inset-bottom));
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity var(--slow) var(--ease), visibility var(--slow) step-end, transform var(--slow) var(--ease);
+  transform:translate3d(0,14px,0);
+}
+.stage.is-on{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:opacity var(--slow) var(--ease), visibility 0s, transform var(--slow) var(--ease)}
+.inner{width:100%;max-width:34rem;text-align:center}
+
+h1{
+  font-family:var(--display);
+  font-optical-sizing:auto;
+  font-weight:300;
+  font-size:clamp(2.1rem,6vw,3.4rem);
+  line-height:1.08;
+  letter-spacing:-.018em;
+  margin:0 0 .6em;
+  color:var(--text);
+}
+h1 em{font-style:italic;color:var(--gold-hi)}
+.eyebrow{
+  font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--text-faint);margin:0 0 1.6em;font-weight:500;
+}
+.lede{color:var(--text-dim);font-size:1.02rem;margin:0 auto 2.2em;max-width:26rem}
+.lede-tight{margin-top:-1.4em;font-size:.92rem;color:var(--text-faint)}
+.whisper{color:var(--text-faint);font-size:.9rem;margin:1.4em 0 0}
+
+/* buttons */
+.btn{
+  font:inherit;font-weight:500;
+  background:transparent;color:var(--text);
+  border:1px solid var(--line);
+  padding:.85em 2.2em;border-radius:999px;
+  cursor:pointer;
+  transition:background .6s var(--ease), border-color .6s var(--ease), color .6s var(--ease), box-shadow .6s var(--ease);
+}
+.btn:hover{border-color:rgba(242,192,120,.5);background:rgba(242,192,120,.06);box-shadow:0 0 40px -12px rgba(242,192,120,.45)}
+.btn-primary{border-color:rgba(242,192,120,.42);color:var(--gold-hi)}
+.btn-quiet{
+  border:0;background:none;color:var(--text-faint);
+  font-size:.86rem;letter-spacing:.06em;padding:.7em 1em;cursor:pointer;
+  transition:color .6s var(--ease);
+}
+.btn-quiet:hover{color:var(--text-dim)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+:focus-visible{outline:2px solid var(--rose);outline-offset:4px;border-radius:6px}
+
+.skip{
+  position:fixed;top:0;left:50%;transform:translate(-50%,-140%);
+  z-index:40;background:var(--deep);border:1px solid var(--line);
+  color:var(--text);padding:.7em 1.4em;border-radius:0 0 10px 10px;
+  text-decoration:none;font-size:.85rem;transition:transform .3s var(--ease);
+}
+.skip:focus{transform:translate(-50%,0)}
+
+/* footer rail: sound + advance */
+.rail{
+  position:fixed;left:0;right:0;bottom:0;z-index:12;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px clamp(14px,4vw,28px);
+  padding-bottom:max(14px,env(safe-area-inset-bottom));
+  opacity:0;visibility:hidden;transition:opacity 1.2s var(--ease), visibility 1.2s step-end;
+  pointer-events:none;
+}
+.rail.is-on{opacity:1;visibility:visible;transition:opacity 1.2s var(--ease), visibility 0s;pointer-events:auto}
+.rail .btn-quiet{pointer-events:auto}
+
+/* ============================================================
+   FOLLOW
+   ============================================================ */
+#follow .inner{max-width:26rem}
+.hint{
+  font-family:var(--display);font-weight:300;font-style:italic;
+  font-size:clamp(1.15rem,3.4vw,1.5rem);color:var(--text-dim);
+  transition:opacity 2s var(--ease);
+}
+
+/* ============================================================
+   BREATHE
+   ============================================================ */
+.ring-wrap{display:grid;place-items:center;height:min(58vh,420px)}
+.ring{
+  width:min(46vw,220px);aspect-ratio:1;border-radius:50%;
+  border:1px solid rgba(242,192,120,.42);
+  box-shadow:0 0 60px -18px rgba(242,192,120,.7), inset 0 0 50px -20px rgba(242,192,120,.6);
+  transform:scale(.62);
+  will-change:transform,opacity;
+}
+/* Cadence: 4s in, 4s hold, 6s out. Keyframe stops are 4/14 and 8/14.
+   If you change CONFIG.TIMING.breathIn / breathHold / breathOut,
+   change the duration and these two percentages to match. */
+.ring.is-breathing{animation:breathe 14s linear infinite}
+@keyframes breathe{
+  0%{transform:scale(.62);opacity:.5;animation-timing-function:cubic-bezier(.34,.68,.36,1)}
+  28.571%{transform:scale(1);opacity:1;animation-timing-function:linear}
+  57.143%{transform:scale(1);opacity:1;animation-timing-function:cubic-bezier(.45,.05,.5,1)}
+  100%{transform:scale(.62);opacity:.5}
+}
+.breath-word{
+  margin-top:2.2em;font-size:.82rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--text-dim);min-height:1.4em;transition:opacity .7s var(--ease);
+}
+
+.drift-cue{
+  position:absolute;left:0;right:0;bottom:clamp(58px,9vh,96px);margin:0;
+  text-align:center;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--text-faint);opacity:0;pointer-events:none;
+  transition:opacity 1.2s var(--ease);
+}
+
+/* ============================================================
+   DESCEND
+   ============================================================ */
+#descend .inner{max-width:30rem}
+.surfacing{
+  font-family:var(--display);font-weight:300;
+  font-size:clamp(1.35rem,4.4vw,2.1rem);
+  line-height:1.35;letter-spacing:-.01em;
+  color:var(--text);
+  opacity:0;transform:translate3d(0,18px,0);
+  transition:opacity 1.5s var(--ease), transform 1.5s var(--ease);
+  text-wrap:balance;
+}
+.surfacing.is-up{opacity:.94;transform:none}
+
+/* ============================================================
+   BOOKING
+   ============================================================ */
+#booking{align-content:start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#booking .inner{max-width:33rem;text-align:left;margin-top:clamp(0px,6vh,72px);margin-bottom:64px}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:clamp(20px,4.4vw,34px);
+  backdrop-filter:blur(18px) saturate(120%);
+  -webkit-backdrop-filter:blur(18px) saturate(120%);
+  box-shadow:0 40px 120px -50px rgba(0,0,0,.9), 0 0 80px -40px rgba(242,192,120,.28);
+}
+.card-head{text-align:center;margin-bottom:1.9em}
+.card-head h2{
+  font-family:var(--display);font-weight:300;
+  font-size:clamp(1.5rem,4.4vw,2rem);line-height:1.15;letter-spacing:-.015em;margin:0 0 .35em;
+}
+.card-head p{margin:0;color:var(--text-dim);font-size:.95rem}
+
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2em}
+.cal-month{font-family:var(--display);font-weight:400;font-size:1.12rem;letter-spacing:.01em}
+.nav-btn{
+  background:transparent;border:1px solid var(--line-soft);color:var(--text-dim);
+  width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;
+  transition:border-color .5s var(--ease), color .5s var(--ease), background .5s var(--ease);
+}
+.nav-btn:hover:not([disabled]){border-color:rgba(242,192,120,.42);color:var(--gold-hi);background:rgba(242,192,120,.05)}
+.nav-btn[disabled]{opacity:.25;cursor:not-allowed}
+
+.dow{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);
+  text-align:center;margin-bottom:8px;
+}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day{
+  position:relative;aspect-ratio:1;min-height:40px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:12px;
+  color:var(--text-faint);font:inherit;font-size:.92rem;
+  cursor:default;
+  transition:background .45s var(--ease), border-color .45s var(--ease), color .45s var(--ease), box-shadow .45s var(--ease);
+}
+.day.is-blank{visibility:hidden}
+.day.is-open{color:var(--text);cursor:pointer;border-color:var(--line-soft)}
+.day.is-open:hover{border-color:rgba(242,192,120,.5);background:rgba(242,192,120,.07);color:var(--gold-hi)}
+.day.is-open::after{
+  content:"";position:absolute;bottom:7px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.85;
+}
+.day.is-picked{background:rgba(242,192,120,.14);border-color:rgba(242,192,120,.6);color:var(--gold-hi);box-shadow:0 0 34px -12px rgba(242,192,120,.7)}
+.day.is-picked::after{background:var(--gold-hi)}
+
+.empty{
+  text-align:center;color:var(--text-faint);font-size:.92rem;
+  padding:2.4em 1em;border:1px dashed var(--line-soft);border-radius:14px;
+}
+
+.section-label{
+  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);
+  margin:1.9em 0 .9em;
+}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.4rem,1fr));gap:8px}
+.slot{
+  font:inherit;font-size:.95rem;color:var(--text);
+  background:transparent;border:1px solid var(--line-soft);border-radius:12px;
+  padding:.85em .6em;cursor:pointer;text-align:center;
+  transition:background .45s var(--ease), border-color .45s var(--ease), color .45s var(--ease), box-shadow .45s var(--ease);
+}
+.slot:hover{border-color:rgba(242,192,120,.5);background:rgba(242,192,120,.07);color:var(--gold-hi)}
+.slot.is-picked{background:rgba(242,192,120,.14);border-color:rgba(242,192,120,.6);color:var(--gold-hi);box-shadow:0 0 34px -12px rgba(242,192,120,.7)}
+
+.chosen{
+  display:flex;align-items:baseline;justify-content:space-between;gap:1em;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:14px;padding:1em 1.2em;margin-bottom:1.6em;
+  background:rgba(242,192,120,.05);
+}
+.chosen-when{font-family:var(--display);font-weight:400;font-size:1.06rem;color:var(--gold-hi)}
+.chosen-meta{font-size:.85rem;color:var(--text-dim)}
+
+.field{margin-bottom:1.1em}
+label{display:block;font-size:.8rem;letter-spacing:.05em;color:var(--text-dim);margin-bottom:.5em}
+label .opt{color:var(--text-faint)}
+input,textarea{
+  width:100%;font:inherit;font-size:1rem;color:var(--text);
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--line-soft);border-radius:12px;
+  padding:.8em .95em;
+  transition:border-color .45s var(--ease), background .45s var(--ease);
+}
+input:hover,textarea:hover{border-color:rgba(242,192,120,.3)}
+input:focus,textarea:focus{border-color:rgba(242,192,120,.55);background:rgba(255,255,255,.055)}
+textarea{resize:vertical;min-height:5.2em;line-height:1.5}
+.err{color:var(--rose);font-size:.82rem;margin-top:.45em;min-height:1.1em}
+.actions{display:flex;align-items:center;justify-content:space-between;gap:1em;margin-top:1.7em;flex-wrap:wrap}
+
+.done{text-align:center}
+.done .seal{
+  width:56px;height:56px;margin:0 auto 1.4em;border-radius:50%;
+  border:1px solid rgba(242,192,120,.5);
+  box-shadow:0 0 50px -14px rgba(242,192,120,.8), inset 0 0 30px -14px rgba(242,192,120,.8);
+}
+.done h2{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,4.4vw,2rem);margin:0 0 .5em;letter-spacing:-.015em}
+.done .when{font-family:var(--display);font-size:1.2rem;color:var(--gold-hi);margin:0 0 1.2em}
+.done p{color:var(--text-dim);font-size:.95rem;margin:0 0 .8em}
+
+.footnote{
+  text-align:center;color:var(--text-faint);font-size:.8rem;
+  margin-top:1.8em;line-height:1.7;
+}
+.footnote a{color:var(--text-dim)}
+
+@media (max-width:520px){
+  .day{min-height:38px;font-size:.86rem;border-radius:10px}
+  .slots{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .ring.is-breathing{animation:breathe-still 14s linear infinite}
+  @keyframes breathe-still{
+    0%{opacity:.4;animation-timing-function:ease-out}
+    28.571%{opacity:1;animation-timing-function:linear}
+    57.143%{opacity:1;animation-timing-function:ease-in-out}
+    100%{opacity:.4}
+  }
+  .stage{transform:none}
+  .surfacing{transform:none;transition:opacity 1.5s ease}
+  .surfacing.is-up{transform:none}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#booking" id="skipLink">Skip to the calendar</a>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div id="fallback" aria-hidden="true"></div>
+
+<main>
+  <!-- ARRIVAL -->
+  <section class="stage" id="arrival" aria-label="Arrival">
+    <div class="inner">
+      <p class="eyebrow">Doorways to Change</p>
+      <h1>Before you book,<br><em>settle for a minute.</em></h1>
+      <p class="lede">This page is a short version of the work itself. Follow the light, breathe, and a calendar will meet you at the bottom.</p>
+      <p class="lede lede-tight">The light follows your mouse, your finger, or the arrow keys. Move it whenever you like.</p>
+      <button class="btn btn-primary" id="beginBtn">Begin</button>
+      <p class="whisper">About a minute. You can leave at any point.</p>
+    </div>
+  </section>
+
+  <!-- FOLLOW -->
+  <section class="stage" id="follow" aria-label="Follow the light">
+    <div class="inner">
+      <p class="hint" id="followHint">Follow the light.</p>
+    </div>
+  </section>
+
+  <!-- BREATHE -->
+  <section class="stage" id="breathe" aria-label="Breathe">
+    <div class="inner">
+      <div class="ring-wrap"><div class="ring" id="ring"></div></div>
+      <p class="breath-word" id="breathWord">Breathe with the ring</p>
+    </div>
+    <p class="drift-cue" id="driftCue">Follow the light</p>
+  </section>
+
+  <!-- DESCEND -->
+  <section class="stage" id="descend" aria-label="Descent">
+    <div class="inner">
+      <p class="surfacing" id="surfacing" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="stage" id="booking" aria-label="Booking">
+    <div class="inner">
+      <div class="card">
+        <div id="bookingView"></div>
+      </div>
+      <p class="footnote" id="footnote"></p>
+    </div>
+  </section>
+</main>
+
+<div class="rail" id="rail">
+  <button class="btn-quiet" id="soundBtn" aria-pressed="false">Sound off</button>
+  <button class="btn-quiet" id="onwardBtn">Go on ahead &rsaquo;</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONFIG — everything the practitioner swaps lives here.
+   ============================================================ */
+const CONFIG = {
+  BUSINESS_NAME: "Doorways to Change",
+  PRACTITIONER_NAME: "Trever",              // add surname if you want it shown
+  BOOKING_EMAIL: "doorwaystochange@gmail.com",
+  SESSION_LENGTH_MIN: 90,
+  TIMEZONE_LABEL: "Eastern Time",
+  LOCATION_LINE: "In person in Stratham, NH, or over Zoom.",
+
+  // Set real availability here. Keys are YYYY-MM-DD, values are 24-hour start times.
+  // Delete a date entirely when nothing is open that day.
+  // INTEGRATION 3: calendar link — a backend sync (Google Calendar, Cal.com, a small
+  // API of your own) would replace this static object by fetching the same shape at
+  // load time and calling renderMonth() when it arrives. Nothing else has to change.
+  AVAILABILITY: {
+    "2026-07-28": ["17:30","19:15"],
+    "2026-07-29": ["17:30","19:15"],
+    "2026-07-30": ["17:30","19:15"],
+    "2026-08-01": ["10:00","13:00","15:30"],
+    "2026-08-02": ["10:00","13:00"],
+    "2026-08-04": ["17:30","19:15"],
+    "2026-08-05": ["17:30","19:15"],
+    "2026-08-06": ["17:30","19:15"],
+    "2026-08-08": ["10:00","13:00","15:30"],
+    "2026-08-09": ["10:00","13:00"],
+    "2026-08-11": ["17:30","19:15"],
+    "2026-08-12": ["17:30","19:15"],
+    "2026-08-13": ["17:30","19:15"],
+    "2026-08-15": ["10:00","13:00","15:30"],
+    "2026-08-16": ["10:00","13:00"],
+    "2026-08-18": ["17:30","19:15"],
+    "2026-08-20": ["17:30","19:15"],
+    "2026-08-22": ["10:00","13:00","15:30"]
+  },
+
+  // Where bookings are sent. Paste the endpoint URL from your form service
+  // (Formspree, Basin, Netlify Forms) between the quotes and bookings go live.
+  // While this is empty, the form shows the confirmation but sends nothing.
+  FORM_ENDPOINT: "https://formspree.io/f/mwvgadbj",
+
+  // INTEGRATION 2 flag. Leave false. See runPaymentStep() below.
+  REQUIRE_PAYMENT: false,
+
+  // Pacing, in milliseconds. Slower is usually better here.
+  // breathIn / breathHold / breathOut set the breathing cadence. If you change
+  // them, update the @keyframes breathe percentages in the stylesheet to match.
+  TIMING: {
+    follow: 7000,
+    line: 5200,
+    breathLeadIn: 6400,   // "breathe with the ring", then the count, then the first inhale
+    breathCountAt: 3600,  // when "in 3, 2, 1" replaces the opening line
+    breathIn: 4000,
+    breathHold: 4000,
+    breathOut: 6000,
+    breathCycles: 2
+  }
+};
+
+const LINES = [
+  "You do not have to hold all of it right now.",
+  "Notice how little effort it takes to simply follow.",
+  "Whatever you walked in carrying can wait here a moment.",
+  "Change rarely arrives loudly. It settles in."
+];
+
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = function(id){ return document.getElementById(id); };
+const timers = [], loops = [];
+function later(fn, ms){ const t = setTimeout(fn, ms); timers.push(t); return t; }
+function loop(fn, ms){ const t = setInterval(fn, ms); loops.push(t); return t; }
+function clearLater(){
+  while(timers.length){ clearTimeout(timers.pop()); }
+  while(loops.length){ clearInterval(loops.pop()); }
+}
+
+/* ============================================================
+   FIELD — volumetric fog, gold light, descent. WebGL with a
+   CSS fallback if the context is unavailable.
+   ============================================================ */
+const Field = (function(){
+  const canvas = $("field");
+  let gl=null, prog=null, u={}, raf=0;
+  let renderScale = 1;
+  const trail = [];
+  const TRAIL = 10;
+
+  const state = {
+    light:[0,0], target:[0,0],
+    depth:0, depthTarget:0,
+    glow:1, glowTarget:1,
+    breath:0,
+    pointerAt:0, time:0
+  };
+
+  const VERT = [
+    "attribute vec2 aPos;",
+    "void main(){ gl_Position = vec4(aPos,0.0,1.0); }"
+  ].join("\n");
+
+  const FRAG = [
+    "precision highp float;",
+    "uniform vec2 uRes;",
+    "uniform float uTime, uDepth, uBreath, uGlow, uReduce;",
+    "uniform vec2 uLight;",
+    "uniform vec3 uTrail[10];",
+    "float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }",
+    "float noise(vec2 p){",
+    "  vec2 i=floor(p), f=fract(p);",
+    "  f=f*f*(3.0-2.0*f);",
+    "  float a=hash(i), b=hash(i+vec2(1.0,0.0)), c=hash(i+vec2(0.0,1.0)), d=hash(i+vec2(1.0,1.0));",
+    "  return mix(mix(a,b,f.x), mix(c,d,f.x), f.y);",
+    "}",
+    "float fbm(vec2 p){",
+    "  float v=0.0, a=0.5;",
+    "  mat2 m=mat2(1.62,1.18,-1.18,1.62);",
+    "  for(int i=0;i<4;i++){ v+=a*noise(p); p=m*p; a*=0.5; }",
+    "  return v;",
+    "}",
+    "void main(){",
+    "  vec2 frag = gl_FragCoord.xy / uRes;",
+    "  float aspect = uRes.x / uRes.y;",
+    "  vec2 uv = frag - 0.5; uv.x *= aspect;",
+    "  vec2 L = vec2(uLight.x*aspect, uLight.y);",
+    "  float t = uTime;",
+    // gold light plus trail
+    "  float dl = length(uv - L);",
+    "  float lightAmt = exp(-dl*dl*900.0)*1.55 + exp(-dl*3.4)*0.5 + 0.085/(1.0+dl*dl*26.0);",
+    "  for(int i=0;i<10;i++){",
+    "    vec3 tp = uTrail[i];",
+    "    vec2 P = vec2(tp.x*aspect, tp.y);",
+    "    float d = length(uv - P);",
+    "    lightAmt += tp.z * (exp(-d*d*300.0)*0.5 + exp(-d*6.0)*0.10);",
+    "  }",
+    "  lightAmt *= (0.84 + 0.28*uBreath) * uGlow;",
+    // layered fog with parallax and descent scroll
+    "  float fog = 0.0, lit = 0.0;",
+    "  float scroll = mix(1.0, 0.18, uReduce);",
+    "  for(int i=0;i<3;i++){",
+    "    float z = float(i);",
+    "    float sc = 1.75 + z*1.2;",
+    "    vec2 par = (uv - L) * (0.05 + 0.11*z);",
+    "    vec2 off = vec2(t*(0.011+0.009*z), -t*(0.018+0.011*z)*scroll - uDepth*(0.95+0.8*z)*scroll);",
+    "    float f = fbm(uv*sc + off + par);",
+    "    f = pow(max(f,0.0), 1.65);",
+    "    float w = 1.0/(1.0 + z*0.8);",
+    "    fog += f*w;",
+    "    lit += f*w*exp(-length(uv-L)*(1.6+z*0.95));",
+    "  }",
+    "  fog *= 0.52; lit *= 0.95;",
+    // colour
+    "  vec3 deep = vec3(0.043,0.055,0.102);",
+    "  vec3 abyss = vec3(0.019,0.023,0.043);",
+    "  vec3 gold = vec3(0.949,0.753,0.471);",
+    "  vec3 hot  = vec3(1.000,0.890,0.659);",
+    "  float r = length(uv);",
+    "  vec3 col = mix(deep, abyss, clamp(r*1.1,0.0,1.0));",
+    "  col = mix(col, abyss, uDepth*0.88);",
+    "  col += vec3(0.085,0.095,0.150) * fog * (1.0 - uDepth*0.55);",
+    "  col += gold * lit * 0.5 * (1.0 - uDepth*0.3);",
+    "  col += mix(gold, hot, clamp(lightAmt,0.0,1.0)) * lightAmt * (1.0 - uDepth*0.22);",
+    // vignette + grain
+    "  float vig = pow(length(frag-0.5)*1.34, 2.2);",
+    "  col *= 1.0 - 0.58*clamp(vig,0.0,1.0);",
+    "  col += (hash(frag*uRes + fract(t)) - 0.5) * 0.022;",
+    "  gl_FragColor = vec4(max(col, 0.0), 1.0);",
+    "}"
+  ].join("\n");
+
+  function compile(src, type){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) return null;
+    return s;
+  }
+
+  function init(){
+    try{
+      gl = canvas.getContext("webgl",{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:"low-power"})
+        || canvas.getContext("experimental-webgl",{alpha:false,antialias:false});
+    }catch(e){ gl = null; }
+    if(!gl){ document.body.classList.add("no-webgl"); return false; }
+
+    const vs = compile(VERT, gl.VERTEX_SHADER);
+    const fs = compile(FRAG, gl.FRAGMENT_SHADER);
+    if(!vs || !fs){ document.body.classList.add("no-webgl"); gl = null; return false; }
+
+    prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog, gl.LINK_STATUS)){ document.body.classList.add("no-webgl"); gl = null; return false; }
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    ["uRes","uTime","uDepth","uBreath","uGlow","uReduce","uLight"].forEach(function(n){
+      u[n] = gl.getUniformLocation(prog, n);
+    });
+    u.uTrail = gl.getUniformLocation(prog, "uTrail[0]");
+    gl.uniform1f(u.uReduce, reduce ? 1 : 0);
+
+    for(let i=0;i<TRAIL;i++) trail.push([0,0,0]);
+
+    resize();
+    window.addEventListener("resize", resize, {passive:true});
+    window.addEventListener("orientationchange", resize, {passive:true});
+    canvas.addEventListener("webglcontextlost", function(e){ e.preventDefault(); cancelAnimationFrame(raf); document.body.classList.add("no-webgl"); });
+    return true;
+  }
+
+  function resize(){
+    if(!gl) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = Math.max(1, Math.round(window.innerWidth * dpr * renderScale));
+    const h = Math.max(1, Math.round(window.innerHeight * dpr * renderScale));
+    canvas.width = w; canvas.height = h;
+    canvas.style.width = "100%"; canvas.style.height = "100%";
+    gl.viewport(0,0,w,h);
+    gl.uniform2f(u.uRes, w, h);
+  }
+
+  // adaptive: step the render resolution down once if frames are slow
+  let slowFrames = 0, sampled = 0, stepped = false;
+  function watchPerf(dt){
+    if(stepped || sampled > 140) return;
+    sampled++;
+    if(dt > 34) slowFrames++;
+    if(sampled > 70 && slowFrames > 30){
+      stepped = true; renderScale = 0.62; resize();
+    }
+  }
+
+  let last = 0;
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!gl) return;
+    const dt = last ? Math.min(now - last, 60) : 16;
+    last = now;
+    watchPerf(dt);
+
+    state.time += dt * 0.001 * (reduce ? 0.35 : 1);
+
+    // idle drift when the pointer has been still
+    const idle = (now - state.pointerAt) > 2400;
+    if(idle){
+      const s = state.time * 0.18;
+      state.target[0] = Math.sin(s*0.9) * 0.17 + Math.sin(s*0.37) * 0.06;
+      state.target[1] = Math.cos(s*0.63) * 0.12 + Math.sin(s*0.21) * 0.05;
+    }
+
+    const k = reduce ? 0.02 : 0.055;
+    state.light[0] += (state.target[0] - state.light[0]) * k;
+    state.light[1] += (state.target[1] - state.light[1]) * k;
+    state.depth += (state.depthTarget - state.depth) * 0.012;
+    state.glow  += (state.glowTarget  - state.glow ) * 0.03;
+
+    // trail
+    if(!reduce){
+      trail.pop();
+      trail.unshift([state.light[0], state.light[1], 1]);
+      const flat = new Float32Array(TRAIL*3);
+      for(let i=0;i<TRAIL;i++){
+        const p = trail[i];
+        flat[i*3]   = p[0];
+        flat[i*3+1] = p[1];
+        flat[i*3+2] = 0.30 * Math.pow(1 - i/TRAIL, 2.2);
+      }
+      gl.uniform3fv(u.uTrail, flat);
+    }
+
+    gl.uniform1f(u.uTime, state.time);
+    gl.uniform1f(u.uDepth, state.depth);
+    gl.uniform1f(u.uBreath, state.breath);
+    gl.uniform1f(u.uGlow, state.glow);
+    gl.uniform2f(u.uLight, state.light[0], state.light[1]);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  function pointTo(x, y){
+    state.target[0] = (x / window.innerWidth) - 0.5;
+    state.target[1] = 0.5 - (y / window.innerHeight);
+    state.pointerAt = performance.now();
+  }
+
+  return {
+    start: function(){
+      const ok = init();
+      if(ok) raf = requestAnimationFrame(frame);
+      return ok;
+    },
+    pointTo: pointTo,
+    nudge: function(dx, dy){
+      state.target[0] = Math.max(-0.48, Math.min(0.48, state.target[0] + dx));
+      state.target[1] = Math.max(-0.48, Math.min(0.48, state.target[1] + dy));
+      state.pointerAt = performance.now();
+    },
+    centre: function(){ state.target[0] = 0; state.target[1] = 0; state.pointerAt = performance.now() + 999999; },
+    setDepth: function(v){ state.depthTarget = v; document.body.classList.toggle("at-depth", v > 0.5); },
+    setGlow: function(v){ state.glowTarget = v; },
+    setBreath: function(v){ state.breath = v; }
+  };
+})();
+
+/* ============================================================
+   AUDIO — a soft drone, muted by default.
+   ============================================================ */
+const Sound = (function(){
+  let ctx=null, master=null, on=false, nodes=[];
+  function build(){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    const filt = ctx.createBiquadFilter();
+    filt.type = "lowpass"; filt.frequency.value = 340; filt.Q.value = 0.6;
+    filt.connect(master); master.connect(ctx.destination);
+    [55, 82.5, 110].forEach(function(f, i){
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.value = i === 0 ? 0.16 : (i === 1 ? 0.09 : 0.045);
+      o.connect(g); g.connect(filt); o.start();
+      nodes.push(o);
+    });
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.frequency.value = 0.1; lg.gain.value = 2.2;
+    lfo.connect(lg); lg.connect(nodes[1].frequency); lfo.start();
+    nodes.push(lfo);
+    return true;
+  }
+  return {
+    toggle: function(){
+      if(!ctx && !build()) return false;
+      if(ctx.state === "suspended") ctx.resume();
+      on = !on;
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setTargetAtTime(on ? 0.09 : 0, ctx.currentTime, 1.2);
+      return on;
+    }
+  };
+})();
+
+/* ============================================================
+   FLOW
+   ============================================================ */
+const stages = ["arrival","follow","breathe","descend","booking"];
+let current = "arrival";
+
+function show(name){
+  stages.forEach(function(s){ $(s).classList.toggle("is-on", s === name); });
+  current = name;
+  document.body.classList.toggle("is-booking", name === "booking");
+  $("rail").classList.toggle("is-on", name !== "arrival");
+  $("onwardBtn").style.display = (name === "booking") ? "none" : "";
+}
+
+function goArrival(){
+  show("arrival");
+  Field.setDepth(0); Field.setGlow(1);
+  later(function(){ $("beginBtn").focus({preventScroll:true}); }, 400);
+}
+
+function goFollow(){
+  clearLater();
+  show("follow");
+  Field.setDepth(0.05);
+  const hint = $("followHint");
+  later(function(){
+    hint.style.opacity = "0";
+    later(function(){
+      hint.textContent = "Good. Stay with it.";
+      hint.style.opacity = "1";
+    }, 2000);
+  }, 3800);
+  later(goBreathe, CONFIG.TIMING.follow);
+}
+
+function goBreathe(){
+  clearLater();
+  show("breathe");
+  Field.setDepth(0.16);
+
+  const T = CONFIG.TIMING;
+  const CYCLE = T.breathIn + T.breathHold + T.breathOut;
+  const FADE = 700;                       // matches the .breath-word transition
+  const ring = $("ring"), word = $("breathWord"), cue = $("driftCue");
+
+  word.textContent = "Breathe with the ring";
+  word.style.opacity = "1";
+  cue.style.opacity = "0";
+
+  // swap the cue so it is fully faded before the next word arrives
+  function say(text, at){
+    later(function(){
+      word.style.opacity = "0";
+      later(function(){ word.textContent = text; word.style.opacity = "1"; }, FADE);
+    }, Math.max(0, at - FADE));
+  }
+
+  say("In 3, 2, 1", T.breathCountAt);
+  later(function(){ ring.classList.add("is-breathing"); }, T.breathLeadIn);
+
+  for(let c = 0; c < T.breathCycles; c++){
+    const base = T.breathLeadIn + c * CYCLE;
+    say("Breathe in", base);
+    say("Hold it", base + T.breathIn);
+    say("And out, slowly", base + T.breathIn + T.breathHold);
+  }
+  say("", T.breathLeadIn + T.breathCycles * CYCLE);
+
+  // a quiet reminder in the first exhale, cleared before the next inhale
+  if(T.breathCycles > 1){
+    const firstOut = T.breathLeadIn + T.breathIn + T.breathHold;
+    later(function(){ cue.style.opacity = "1"; }, firstOut + Math.round(T.breathOut * 0.45));
+    later(function(){ cue.style.opacity = "0"; }, T.breathLeadIn + CYCLE - 1500);
+  }
+
+  // the light breathes on the same count
+  const t0 = performance.now();
+  loop(function(){
+    const e = performance.now() - t0 - T.breathLeadIn;
+    if(e < 0){ Field.setBreath(0); return; }
+    const p = e % CYCLE;
+    let v;
+    if(p < T.breathIn) v = p / T.breathIn;
+    else if(p < T.breathIn + T.breathHold) v = 1;
+    else v = 1 - (p - T.breathIn - T.breathHold) / T.breathOut;
+    Field.setBreath(v);
+  }, 40);
+
+  later(function(){
+    ring.classList.remove("is-breathing");
+    cue.style.opacity = "0";
+    Field.setBreath(0);
+    goDescend();
+  }, T.breathLeadIn + T.breathCycles * CYCLE + 1400);
+}
+
+function goDescend(){
+  clearLater();
+  $("driftCue").style.opacity = "0";
+  show("descend");
+  Field.centre();
+  const el = $("surfacing");
+  const step = CONFIG.TIMING.line;
+
+  LINES.forEach(function(line, i){
+    later(function(){
+      Field.setDepth(0.28 + (i+1) * (0.72/LINES.length));
+      el.textContent = line;
+      requestAnimationFrame(function(){ el.classList.add("is-up"); });
+    }, i * step);
+    later(function(){ el.classList.remove("is-up"); }, i*step + step - 1500);
+  });
+
+  later(function(){ Field.setGlow(2.0); }, LINES.length*step - 1200);
+  later(goBooking, LINES.length * step);
+}
+
+function goBooking(){
+  clearLater();
+  Field.setDepth(0.82);
+  Field.setGlow(0.72);
+  Field.centre();
+  show("booking");
+  window.scrollTo(0,0);
+  later(function(){
+    const f = $("bookingView").querySelector("button, input, [tabindex]");
+    if(f) f.focus({preventScroll:true});
+  }, 900);
+}
+
+function onward(){
+  if(current === "arrival") goFollow();
+  else if(current === "follow") goBreathe();
+  else if(current === "breathe") goDescend();
+  else goBooking();
+}
+
+/* ============================================================
+   CALENDAR
+   ============================================================ */
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+const booking = { date:null, time:null, view:"calendar", cursor:null, details:null };
+
+function keyOf(y,m,d){
+  return y + "-" + String(m+1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+}
+function dateFromKey(k){
+  const p = k.split("-");
+  return new Date(Number(p[0]), Number(p[1])-1, Number(p[2]));
+}
+function openDays(){
+  return Object.keys(CONFIG.AVAILABILITY).filter(function(k){
+    return CONFIG.AVAILABILITY[k] && CONFIG.AVAILABILITY[k].length;
+  }).sort();
+}
+function prettyTime(hhmm){
+  const p = hhmm.split(":");
+  let h = Number(p[0]);
+  const ap = h >= 12 ? "PM" : "AM";
+  h = h % 12; if(h === 0) h = 12;
+  return h + ":" + p[1] + " " + ap;
+}
+function longDate(k){
+  const d = dateFromKey(k);
+  const full = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()];
+  return full + ", " + MONTHS[d.getMonth()] + " " + d.getDate();
+}
+
+function el(tag, cls, text){
+  const n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(text != null) n.textContent = text;
+  return n;
+}
+
+function render(){
+  const host = $("bookingView");
+  host.innerHTML = "";
+  if(booking.view === "calendar") renderCalendar(host);
+  else if(booking.view === "form") renderForm(host);
+  else renderDone(host);
+  renderFootnote();
+}
+
+function renderFootnote(){
+  const f = $("footnote");
+  f.innerHTML = "";
+  f.appendChild(document.createTextNode(CONFIG.LOCATION_LINE + " "));
+  f.appendChild(document.createTextNode("Questions first? "));
+  const a = document.createElement("a");
+  a.href = "mailto:" + CONFIG.BOOKING_EMAIL;
+  a.textContent = CONFIG.BOOKING_EMAIL;
+  f.appendChild(a);
+}
+
+function renderCalendar(host){
+  const days = openDays();
+  if(!booking.cursor){
+    const first = days.length ? dateFromKey(days[0]) : new Date();
+    booking.cursor = new Date(first.getFullYear(), first.getMonth(), 1);
+  }
+  const y = booking.cursor.getFullYear(), m = booking.cursor.getMonth();
+
+  const head = el("div","card-head");
+  head.appendChild(el("h2","", "Choose a time"));
+  head.appendChild(el("p","", CONFIG.SESSION_LENGTH_MIN + " minutes with " + CONFIG.PRACTITIONER_NAME + ", " + CONFIG.TIMEZONE_LABEL));
+  host.appendChild(head);
+
+  const nav = el("div","cal-nav");
+  const prev = el("button","nav-btn","\u2039");
+  prev.setAttribute("aria-label","Previous month");
+  const next = el("button","nav-btn","\u203A");
+  next.setAttribute("aria-label","Next month");
+  const label = el("div","cal-month", MONTHS[m] + " " + y);
+  label.setAttribute("aria-live","polite");
+  prev.onclick = function(){ booking.cursor = new Date(y, m-1, 1); render(); };
+  next.onclick = function(){ booking.cursor = new Date(y, m+1, 1); render(); };
+  if(days.length){
+    const firstM = dateFromKey(days[0]), lastM = dateFromKey(days[days.length-1]);
+    if(y === firstM.getFullYear() && m <= firstM.getMonth()) prev.disabled = true;
+    if(y === lastM.getFullYear() && m >= lastM.getMonth()) next.disabled = true;
+  }
+  nav.appendChild(prev); nav.appendChild(label); nav.appendChild(next);
+  host.appendChild(nav);
+
+  const dow = el("div","dow");
+  DOW.forEach(function(d){ dow.appendChild(el("div","", d.slice(0,2))); });
+  host.appendChild(dow);
+
+  const grid = el("div","grid");
+  grid.setAttribute("role","group");
+  grid.setAttribute("aria-label","Available days in " + MONTHS[m]);
+  const lead = new Date(y,m,1).getDay();
+  const count = new Date(y,m+1,0).getDate();
+  for(let i=0;i<lead;i++){
+    const b = el("div","day is-blank","");
+    grid.appendChild(b);
+  }
+  let firstOpen = null;
+  for(let d=1; d<=count; d++){
+    const k = keyOf(y,m,d);
+    const open = !!(CONFIG.AVAILABILITY[k] && CONFIG.AVAILABILITY[k].length);
+    const cell = document.createElement(open ? "button" : "div");
+    cell.className = "day" + (open ? " is-open" : "") + (booking.date === k ? " is-picked" : "");
+    cell.textContent = String(d);
+    if(open){
+      cell.type = "button";
+      cell.setAttribute("aria-label", longDate(k) + ", " + CONFIG.AVAILABILITY[k].length + " times open");
+      cell.dataset.key = k;
+      cell.onclick = function(){ booking.date = k; booking.time = null; render(); };
+      if(!firstOpen) firstOpen = cell;
+    }
+    grid.appendChild(cell);
+  }
+  grid.addEventListener("keydown", gridKeys);
+  host.appendChild(grid);
+
+  if(!days.some(function(k){ const d = dateFromKey(k); return d.getFullYear()===y && d.getMonth()===m; })){
+    host.appendChild(el("div","empty","Nothing open this month. Try the next one, or email to ask about another time."));
+  }
+
+  // times for the selected day
+  if(booking.date){
+    const dOpen = dateFromKey(booking.date);
+    if(dOpen.getFullYear() === y && dOpen.getMonth() === m){
+      host.appendChild(el("div","section-label", longDate(booking.date)));
+      const slots = el("div","slots");
+      CONFIG.AVAILABILITY[booking.date].forEach(function(t){
+        const b = el("button","slot" + (booking.time === t ? " is-picked" : ""), prettyTime(t));
+        b.type = "button";
+        b.onclick = function(){
+          booking.time = t;
+          // INTEGRATION 2 sits between this selection and the form/confirmation.
+          runPaymentStep(function(){ booking.view = "form"; render(); focusFirstField(); });
+        };
+        slots.appendChild(b);
+      });
+      host.appendChild(slots);
+    }
+  }
+}
+
+function gridKeys(e){
+  const keys = ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"];
+  if(keys.indexOf(e.key) === -1) return;
+  const cells = Array.prototype.slice.call(e.currentTarget.querySelectorAll("button.day"));
+  const i = cells.indexOf(document.activeElement);
+  if(i === -1) return;
+  e.preventDefault();
+  const back = (e.key === "ArrowLeft" || e.key === "ArrowUp");
+  let n = back ? i-1 : i+1;
+  n = Math.max(0, Math.min(cells.length-1, n));
+  cells[n].focus();
+}
+
+function focusFirstField(){
+  const f = $("bookingView").querySelector("input");
+  if(f) f.focus({preventScroll:true});
+}
+
+function renderForm(host){
+  const head = el("div","card-head");
+  head.appendChild(el("h2","","A little about you"));
+  head.appendChild(el("p","","Four short answers and the time is yours."));
+  host.appendChild(head);
+
+  const chosen = el("div","chosen");
+  chosen.appendChild(el("div","chosen-when", longDate(booking.date) + " at " + prettyTime(booking.time)));
+  const change = el("button","btn-quiet","Change");
+  change.type = "button";
+  change.onclick = function(){ booking.view = "calendar"; render(); };
+  chosen.appendChild(change);
+  host.appendChild(chosen);
+
+  const fields = [
+    {id:"bkName",  label:"Your name", type:"input", req:true},
+    {id:"bkEmail", label:"Email", type:"input", req:true, inputType:"email"},
+    {id:"bkPhone", label:"Phone <span class='opt'>(optional)</span>", type:"input", req:false, inputType:"tel"},
+    {id:"bkGoal",  label:"What would you like to work on?", type:"textarea", req:true}
+  ];
+  fields.forEach(function(f){
+    const wrap = el("div","field");
+    const lab = document.createElement("label");
+    lab.htmlFor = f.id; lab.innerHTML = f.label;
+    const input = document.createElement(f.type === "textarea" ? "textarea" : "input");
+    input.id = f.id;
+    if(f.inputType) input.type = f.inputType;
+    if(f.req) input.required = true;
+    if(f.id === "bkGoal") input.placeholder = "A sentence is plenty.";
+    const err = el("div","err","");
+    err.id = f.id + "Err";
+    input.setAttribute("aria-describedby", err.id);
+    wrap.appendChild(lab); wrap.appendChild(input); wrap.appendChild(err);
+    host.appendChild(wrap);
+  });
+
+  const actions = el("div","actions");
+  const back = el("button","btn-quiet","\u2039 Back");
+  back.type = "button";
+  back.onclick = function(){ booking.view = "calendar"; render(); };
+  const send = el("button","btn btn-primary","Book this time");
+  send.type = "button";
+  send.onclick = submitFromForm;
+  actions.appendChild(back); actions.appendChild(send);
+  host.appendChild(actions);
+}
+
+function submitFromForm(){
+  const name = $("bkName").value.trim();
+  const email = $("bkEmail").value.trim();
+  const phone = $("bkPhone").value.trim();
+  const goal = $("bkGoal").value.trim();
+  let ok = true;
+
+  function fail(id, msg){ $(id + "Err").textContent = msg; ok = false; }
+  ["bkName","bkEmail","bkPhone","bkGoal"].forEach(function(id){ $(id + "Err").textContent = ""; });
+
+  if(!name) fail("bkName","Add a name so I know who I am meeting.");
+  if(!email) fail("bkEmail","Add an email. The confirmation goes there.");
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) fail("bkEmail","That address is missing something. Check it once.");
+  if(!goal) fail("bkGoal","One line is enough. It shapes the session.");
+  if(!ok){
+    const first = $("bookingView").querySelector(".err:not(:empty)");
+    if(first) first.previousElementSibling.focus();
+    return;
+  }
+
+  booking.details = {
+    name: name, email: email, phone: phone, goal: goal,
+    date: booking.date, time: booking.time,
+    dateLabel: longDate(booking.date), timeLabel: prettyTime(booking.time),
+    lengthMinutes: CONFIG.SESSION_LENGTH_MIN,
+    timezone: CONFIG.TIMEZONE_LABEL
+  };
+  submitBooking(booking.details);
+}
+
+/* ------------------------------------------------------------
+   INTEGRATION 1: booking submission
+   ------------------------------------------------------------
+   Everything the booking needs is in `details`. Right now this is a
+   stub: it shows the confirmation screen and logs the payload. A single
+   HTML file cannot store a booking or email anyone by itself, so this
+   is the seam where a service connects.
+
+   Replace the body with one of:
+     - a fetch() POST to a form endpoint (Formspree, Basin, Netlify Forms)
+     - a fetch() POST to your own small backend, which writes the booking
+       and sends the email from CONFIG.BOOKING_EMAIL
+     - an email service call (Resend, Postmark) from that backend
+
+   Example shape:
+     fetch("https://your-endpoint", {
+       method:"POST",
+       headers:{"Content-Type":"application/json"},
+       body:JSON.stringify(details)
+     }).then(function(r){ if(!r.ok) throw new Error("rejected"); showConfirmation(); })
+       .catch(function(){ showSubmitError(); });
+
+   Until an endpoint exists, nothing is recorded anywhere.
+------------------------------------------------------------ */
+function submitBooking(details){
+  // No endpoint yet: behave as before so the flow still demos end to end.
+  if(!CONFIG.FORM_ENDPOINT){
+    console.log("[Doorways] booking payload, not yet sent anywhere:", details);
+    showConfirmation();
+    return;
+  }
+
+  setSending(true);
+  fetch(CONFIG.FORM_ENDPOINT, {
+    method: "POST",
+    headers: {"Content-Type":"application/json", "Accept":"application/json"},
+    body: JSON.stringify({
+      name: details.name,
+      email: details.email,
+      phone: details.phone,
+      working_on: details.goal,
+      session: details.dateLabel + " at " + details.timeLabel + " " + details.timezone,
+      _subject: "Booking: " + details.name + ", " + details.dateLabel + " " + details.timeLabel
+    })
+  }).then(function(r){
+    if(!r.ok) throw new Error("rejected");
+    setSending(false);
+    showConfirmation();
+  }).catch(function(){
+    setSending(false);
+    showSubmitError(details);
+  });
+}
+
+function setSending(on){
+  const btn = $("bookingView").querySelector(".btn-primary");
+  if(!btn) return;
+  btn.disabled = on;
+  btn.textContent = on ? "Sending\u2026" : "Book this time";
+}
+
+function showConfirmation(){
+  booking.view = "done";
+  render();
+  const h = $("bookingView").querySelector("h2");
+  if(h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }
+}
+
+function showSubmitError(details){
+  const host = $("bookingView");
+  let box = host.querySelector(".err-global");
+  if(!box){
+    box = el("div","err err-global","");
+    box.setAttribute("role","alert");
+    box.style.marginTop = "1.2em";
+    host.appendChild(box);
+  }
+  box.textContent = "";
+  box.appendChild(document.createTextNode("That did not send. Try once more, or "));
+  const a = document.createElement("a");
+  const when = details ? (details.dateLabel + " at " + details.timeLabel) : "a session";
+  a.href = "mailto:" + CONFIG.BOOKING_EMAIL
+    + "?subject=" + encodeURIComponent("Booking: " + when)
+    + "&body=" + encodeURIComponent(
+        "I would like " + when + ".\n\nName: " + (details ? details.name : "")
+        + "\nWhat I would like to work on: " + (details ? details.goal : "") + "\n");
+  a.textContent = "send it by email";
+  a.style.color = "var(--gold-hi)";
+  box.appendChild(a);
+  box.appendChild(document.createTextNode(" and the time is still yours."));
+}
+
+/* ------------------------------------------------------------
+   INTEGRATION 2: Stripe payment (add later)
+   ------------------------------------------------------------
+   This step sits between choosing a slot and the confirmation, and it is
+   inactive. With CONFIG.REQUIRE_PAYMENT false it passes straight through.
+
+   When payment goes live, this is where it slots in. Two usual routes:
+
+   1) Stripe Checkout redirect. Your backend creates a Checkout Session
+      with the slot in the metadata, and this function sends the visitor
+      there instead of calling next():
+        fetch("/create-checkout-session", {method:"POST", body:JSON.stringify({
+          slot: booking.date + " " + booking.time
+        })}).then(function(r){ return r.json(); })
+          .then(function(s){ window.location = s.url; });
+      The success_url returns to this page with ?paid=1, and you call
+      next() on load when that flag is present.
+
+   2) Stripe Payment Element, mounted into a container rendered here,
+      confirming the PaymentIntent before next() runs.
+
+   Either way the slot should be held while payment is in flight, which
+   needs a backend. Stripe cannot be done from a static file alone.
+------------------------------------------------------------ */
+function runPaymentStep(next){
+  if(!CONFIG.REQUIRE_PAYMENT){ next(); return; }
+  next(); // inactive on purpose. Payment goes above this line.
+}
+
+function renderDone(host){
+  const d = booking.details;
+  const wrap = el("div","done");
+  wrap.appendChild(el("div","seal",""));
+  wrap.appendChild(el("h2","","You are on the calendar"));
+  wrap.appendChild(el("p","when", d.dateLabel + " at " + d.timeLabel + ", " + d.timezone));
+  wrap.appendChild(el("p","", CONFIG.SESSION_LENGTH_MIN + " minutes with " + CONFIG.PRACTITIONER_NAME + ". " + CONFIG.LOCATION_LINE));
+  wrap.appendChild(el("p","", "A confirmation goes to " + d.email + ", along with a short note on what to expect before we begin."));
+
+  const again = el("button","btn","Book another time");
+  again.type = "button";
+  again.onclick = function(){
+    booking.date = null; booking.time = null; booking.details = null;
+    booking.view = "calendar"; render();
+  };
+  const actions = el("div","actions");
+  actions.style.justifyContent = "center";
+  actions.appendChild(again);
+  wrap.appendChild(actions);
+  host.appendChild(wrap);
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+Field.start();
+render();
+goArrival();
+
+$("beginBtn").addEventListener("click", goFollow);
+$("onwardBtn").addEventListener("click", onward);
+$("skipLink").addEventListener("click", function(e){ e.preventDefault(); clearLater(); goBooking(); });
+
+$("soundBtn").addEventListener("click", function(){
+  const on = Sound.toggle();
+  this.textContent = on ? "Sound on" : "Sound off";
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+
+window.addEventListener("pointermove", function(e){
+  if(current === "booking") return;
+  Field.pointTo(e.clientX, e.clientY);
+}, {passive:true});
+
+window.addEventListener("touchmove", function(e){
+  if(current === "booking" || !e.touches.length) return;
+  Field.pointTo(e.touches[0].clientX, e.touches[0].clientY);
+}, {passive:true});
+
+window.addEventListener("keydown", function(e){
+  if(current === "booking") return;
+  const step = 0.045;
+  if(e.key === "ArrowLeft"){ Field.nudge(-step,0); }
+  else if(e.key === "ArrowRight"){ Field.nudge(step,0); }
+  else if(e.key === "ArrowUp"){ Field.nudge(0,step); }
+  else if(e.key === "ArrowDown"){ Field.nudge(0,-step); }
+  else return;
+  e.preventDefault();
+});
+
+})();
+</script>
+</body>
+</html>

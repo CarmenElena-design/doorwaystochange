@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trever — Hypnotherapist in southern New Hampshire | Doorways to Change</title>
+<meta name="description" content="Hypnotherapy for sleep, stopping smoking, and stress. 90-minute one-on-one sessions in Stratham, NH, or over Zoom.">
+<meta property="og:title" content="hi. I'm Trever. Hypnotherapist in southern New Hampshire.">
+<meta property="og:description" content="I help your mind change the way it processes information, behaviors, and beliefs.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — matched to the induction page so the handoff is seamless
+   ============================================================ */
+:root{
+  --ink:#05060B;
+  --deep:#0B0E1A;
+  --gold:#F2C078;
+  --gold-hi:#FFE3A8;
+  --rose:#D98A8A;
+  --text:#E8E1D6;
+  --text-dim:rgba(232,225,214,.66);
+  --text-faint:rgba(232,225,214,.40);
+  --line:rgba(242,192,120,.16);
+  --line-soft:rgba(232,225,214,.10);
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --pad:clamp(22px,5vw,40px);
+  --gap:clamp(64px,11vh,132px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--ink);color:var(--text);
+  font-family:var(--body);font-size:clamp(16px,1.05vw,17px);line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+
+/* ambient field: slow warm light, no webgl needed here */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(70vmax 55vmax at 72% -10%, rgba(242,192,120,.13), transparent 62%),
+    radial-gradient(60vmax 60vmax at 8% 42%, rgba(120,132,190,.09), transparent 60%),
+    radial-gradient(90vmax 80vmax at 50% 110%, rgba(242,192,120,.07), transparent 64%),
+    linear-gradient(180deg,#0B0E1A 0%,#05060B 55%,#07080F 100%);
+  animation:drift 44s ease-in-out infinite alternate;
+}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(0,-2.2%,0) scale(1.06)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+@media (prefers-reduced-motion:reduce){.ambient{animation:none}}
+
+.wrap{position:relative;z-index:2;max-width:64rem;margin:0 auto;padding:0 var(--pad)}
+section{padding:var(--gap) 0}
+:focus-visible{outline:2px solid var(--rose);outline-offset:4px;border-radius:6px}
+
+.skip{position:fixed;top:0;left:50%;transform:translate(-50%,-140%);z-index:40;
+  background:var(--deep);border:1px solid var(--line);color:var(--text);
+  padding:.7em 1.4em;border-radius:0 0 10px 10px;text-decoration:none;font-size:.85rem;
+  transition:transform .3s var(--ease)}
+.skip:focus{transform:translate(-50%,0)}
+
+/* ============================================================
+   TYPE
+   ============================================================ */
+.eyebrow{font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:500;margin:0 0 1.5em}
+h2{font-family:var(--display);font-optical-sizing:auto;font-weight:300;
+  font-size:clamp(1.75rem,4.6vw,2.9rem);line-height:1.1;letter-spacing:-.02em;margin:0 0 .7em}
+h2 em{font-style:italic;color:var(--gold-hi)}
+h3{font-family:var(--body);font-weight:600;font-size:1.02rem;letter-spacing:.01em;margin:0 0 .5em}
+p{margin:0 0 1.1em;color:var(--text-dim);max-width:38rem}
+p.lead{color:var(--text);font-size:clamp(1.05rem,2.1vw,1.22rem)}
+strong{color:var(--text);font-weight:600}
+
+.btn{display:inline-block;font:inherit;font-weight:500;font-size:1rem;
+  background:rgba(242,192,120,.07);color:var(--gold-hi);text-decoration:none;
+  border:1px solid rgba(242,192,120,.42);padding:.95em 2.3em;border-radius:999px;cursor:pointer;
+  transition:background .6s var(--ease),border-color .6s var(--ease),box-shadow .6s var(--ease),transform .6s var(--ease)}
+.btn:hover{background:rgba(242,192,120,.13);border-color:rgba(242,192,120,.7);
+  box-shadow:0 0 60px -16px rgba(242,192,120,.6)}
+.btn-quiet{background:none;border:0;color:var(--text-faint);text-decoration:none;font-size:.92rem;
+  padding:.95em .4em;transition:color .5s var(--ease)}
+.btn-quiet:hover{color:var(--text-dim)}
+.cta-row{display:flex;align-items:center;gap:clamp(10px,3vw,26px);flex-wrap:wrap}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+  padding-top:calc(var(--gap) * .7);padding-bottom:calc(var(--gap) * .7)}
+.name{margin:0 0 .35em;font-weight:600;letter-spacing:-.05em;line-height:.82;color:var(--text)}
+.name .hi{display:block;font-size:clamp(1.5rem,4.6vw,3rem);letter-spacing:-.035em;
+  color:var(--text-faint);margin-bottom:.12em;font-weight:500}
+.name .me{display:block;font-size:clamp(3.4rem,15vw,9.5rem)}
+.name .me .dot{color:var(--gold)}
+.role{font-size:clamp(1rem,2.6vw,1.35rem);letter-spacing:-.005em;color:var(--text);
+  margin:0 0 1.4em;max-width:none}
+.role b{font-weight:600}
+.role span{color:var(--text-faint);font-weight:400}
+.hero .lead{max-width:31rem;margin-bottom:1.1em}
+.already{font-family:var(--display);font-weight:300;font-style:italic;
+  font-size:clamp(1.02rem,2.2vw,1.24rem);line-height:1.45;color:var(--text-faint);
+  max-width:28rem;margin:0 0 2.4em}
+.hero-meta{margin-top:2.6em;font-size:.88rem;color:var(--text-faint);display:flex;gap:1.4em;flex-wrap:wrap}
+.hero-meta span{display:inline-flex;align-items:center;gap:.5em}
+.dotmark{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.8;flex:none}
+
+.scrollcue{margin-top:auto;padding-top:3em;font-size:.7rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--text-faint)}
+
+/* ============================================================
+   SESSION — a real sequence, so it is numbered
+   ============================================================ */
+.steps{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);
+  border-radius:18px;overflow:hidden;margin-top:2.6em}
+@media (min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{background:rgba(9,12,22,.55);padding:clamp(22px,3vw,32px)}
+.step .n{font-family:var(--display);font-size:.95rem;color:var(--gold);opacity:.8;
+  display:block;margin-bottom:1.5em;font-weight:400}
+.step p{font-size:.95rem;margin:0}
+
+.plainly{margin-top:2.6em;border-left:1px solid var(--line);padding-left:clamp(18px,3vw,28px)}
+.plainly ul{list-style:none;margin:0;padding:0}
+.plainly li{color:var(--text-dim);padding:.45em 0;font-size:.98rem}
+.plainly li b{color:var(--text)}
+
+/* ============================================================
+   WORK
+   ============================================================ */
+.work{display:grid;gap:1px;background:var(--line-soft);border-top:1px solid var(--line-soft);
+  border-bottom:1px solid var(--line-soft);margin-top:2.4em}
+@media (min-width:700px){.work{grid-template-columns:1fr 1fr}}
+.work-item{background:var(--ink);padding:clamp(22px,3.4vw,34px)}
+.work-item h3{display:flex;align-items:baseline;gap:.6em}
+.work-item p{font-size:.95rem;margin:0;color:var(--text-dim)}
+.tag{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+  border:1px solid var(--line);border-radius:999px;padding:.25em .8em;font-weight:500;white-space:nowrap}
+
+/* ============================================================
+   PROOF
+   ============================================================ */
+.reviews{display:grid;gap:14px;margin-top:2.4em}
+.review{border:1px solid var(--line-soft);border-radius:16px;padding:clamp(18px,3vw,26px);
+  background:rgba(9,12,22,.5)}
+.review .who{font-family:var(--display);font-size:1.05rem;color:var(--gold-hi);margin:0 0 .2em}
+.review .what{font-size:.85rem;color:var(--text-faint);margin:0 0 1.1em}
+.review audio,.review video{width:100%;display:block;border-radius:10px;background:#000}
+.review audio{height:44px}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about{display:grid;gap:clamp(28px,5vw,56px);align-items:start}
+@media (min-width:760px){.about.has-photo{grid-template-columns:minmax(0,15rem) 1fr}}
+.portrait{margin:0;position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line-soft);
+  background:var(--deep)}
+.portrait img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;
+  filter:grayscale(1) sepia(.32) contrast(1.04) brightness(.92)}
+.portrait::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(242,192,120,.10),rgba(5,6,11,.55));mix-blend-mode:multiply}
+.creds{margin-top:2.4em;padding-top:1.6em;border-top:1px solid var(--line-soft)}
+.creds p{font-size:.86rem;color:var(--text-faint);margin:0;max-width:34rem}
+.badges{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:1.5em}
+.badges .plate{background:rgba(236,231,222,.94);border-radius:12px;padding:10px 14px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.badges img{display:block;height:clamp(40px,7vw,54px);width:auto}
+
+/* ============================================================
+   BOOK
+   ============================================================ */
+.book{border:1px solid var(--line);border-radius:24px;padding:clamp(28px,5vw,54px);
+  background:rgba(9,12,22,.6);
+  box-shadow:0 50px 140px -60px rgba(0,0,0,.95),0 0 100px -50px rgba(242,192,120,.3)}
+.price{display:flex;align-items:baseline;gap:.6em;flex-wrap:wrap;margin:0 0 1.4em}
+.price .fig{font-family:var(--display);font-weight:300;font-size:clamp(2.4rem,7vw,3.6rem);
+  line-height:1;letter-spacing:-.02em;color:var(--gold-hi)}
+.price .unit{color:var(--text-dim);font-size:1rem}
+.guarantee{border-left:1px solid var(--line);padding-left:clamp(16px,3vw,24px);margin:2em 0 2.4em}
+.guarantee p{font-size:.98rem;margin:0 0 .8em}
+.guarantee p:last-child{margin:0}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{border-top:1px solid var(--line-soft);padding:3.4em 0 4.4em;margin-top:var(--gap)}
+.foot{display:flex;justify-content:space-between;gap:1.2em 1.8em;flex-wrap:wrap;
+  font-size:.88rem;color:var(--text-faint);line-height:2}
+.foot a{color:var(--text-dim);text-decoration:none;border-bottom:1px solid var(--line-soft)}
+.foot a:hover{color:var(--gold-hi)}
+.bar{display:flex;gap:clamp(14px,4vw,42px);flex-wrap:wrap;justify-content:center;
+  border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  padding:1.4em 0;margin-top:3em;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-faint)}
+
+/* reveal */
+.rise{opacity:0;transform:translate3d(0,22px,0);
+  transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rise{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#book">Skip to booking</a>
+<div class="ambient" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Doorways to Change</p>
+      <h1 class="name">
+        <span class="hi">hi.</span>
+        <span class="me">I'm Trever<span class="dot">.</span></span>
+      </h1>
+      <p class="role"><b>hypnotherapist</b> <span>in southern New Hampshire</span></p>
+      <p class="lead">I simply help your mind process information differently, in a way that lets it change behaviors and beliefs. We expand your map of reality so you have more choices to choose from.</p>
+      <p class="already">You don't have to try to relax. It already started, and it doesn't need you to notice.</p>
+      <div class="cta-row">
+        <a class="btn" href="./induction.html" id="ctaTop">Book a session</a>
+        <a class="btn-quiet" href="#session">First, what actually happens &rsaquo;</a>
+      </div>
+      <div class="hero-meta">
+        <span><i class="dotmark"></i>90-minute one-on-one sessions</span>
+        <span><i class="dotmark"></i>Stratham, NH, or over Zoom</span>
+      </div>
+      <p class="scrollcue">Scroll</p>
+    </div>
+  </header>
+
+  <!-- ============ SESSION ============ -->
+  <section id="session">
+    <div class="wrap">
+      <div class="rise">
+        <p class="eyebrow">What actually happens</p>
+        <h2>You stay awake.<br><em>You stay in charge.</em></h2>
+        <p class="lead">Hypnosis is not sleep and it is not a stage show. You hear everything, you remember everything afterward, and nobody can make you do anything you would not do anyway. If you wanted to stand up and walk out mid-session, you could. That is the part most people need to hear first.</p>
+      </div>
+
+      <div class="steps rise">
+        <div class="step">
+          <span class="n">01</span>
+          <h3>We talk</h3>
+          <p>The first stretch is a conversation. We investigate the challenges and work out what you actually want to be different.</p>
+        </div>
+        <div class="step">
+          <span class="n">02</span>
+          <h3>You relax</h3>
+          <p>Then we do the work. You settle, and we go after the pattern underneath the problem rather than the surface of it.</p>
+        </div>
+        <div class="step">
+          <span class="n">03</span>
+          <h3>You leave with tools</h3>
+          <p>You get a PDF toolkit holding every tool and skill you learned that day, in your hands, to keep using on your own.</p>
+        </div>
+      </div>
+
+      <div class="plainly rise">
+        <ul>
+          <li><b>90 minutes,</b> one-on-one.</li>
+          <li><b>Between sessions is yours.</b> The practice is self-directed, and you have the toolkit for it.</li>
+          <li><b>Bring no expectations.</b> That is the only preparation there is.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORK ============ -->
+  <section id="work">
+    <div class="wrap">
+      <div class="rise">
+        <p class="eyebrow">What I work on</p>
+        <h2>Four doors,<br><em>one way in.</em></h2>
+      </div>
+      <div class="work rise">
+        <div class="work-item">
+          <h3>Sleep</h3>
+          <p>Falling asleep faster, staying asleep, and quieting the mind that starts talking the moment the lights go off.</p>
+        </div>
+        <div class="work-item">
+          <h3>Stopping smoking</h3>
+          <p>Not white-knuckling it. Changing what the cigarette means to you so the pull loses its grip.</p>
+        </div>
+        <div class="work-item">
+          <h3>Stress</h3>
+          <p>The noise underneath the day. What it costs you, and what it is protecting.</p>
+        </div>
+        <div class="work-item">
+          <h3>Trauma resolution <span class="tag">In person only</span></h3>
+          <p>This work happens face to face in Stratham. I do not do it over Zoom, and I will tell you straight if it is not the right fit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROOF ============ -->
+  <section id="proof" hidden>
+    <div class="wrap">
+      <div class="rise">
+        <p class="eyebrow">In their words</p>
+        <h2>People who <em>sat in the chair.</em></h2>
+      </div>
+      <div class="reviews rise" id="reviews"></div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about">
+    <div class="wrap">
+      <div class="rise">
+        <p class="eyebrow">About</p>
+        <h2>Why I do this</h2>
+      </div>
+      <div class="about rise" id="aboutGrid">
+        <figure class="portrait" id="portrait">
+          <img id="portraitImg" alt="Trever, hypnotherapist, Doorways to Change">
+        </figure>
+        <div>
+          <p class="lead">I became the help I was looking for and never found.</p>
+          <p>That is the honest version. I went looking for something that would actually change how my mind handled things, not just help me cope with it, and I could not find it. So I went and learned it. Now I sit on the other side of the chair, and the person across from me is usually looking for the same thing I was.</p>
+          <p>I work with people in southern New Hampshire, in person in Stratham and over Zoom for everything except trauma resolution. If what you need is not something I can help with, I will say so.</p>
+          <div class="creds">
+            <p id="creds"></p>
+            <div class="badges" id="badges"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BOOK ============ -->
+  <section id="book">
+    <div class="wrap">
+      <div class="book rise">
+        <p class="eyebrow">Working together</p>
+        <h2>Four sessions.<br><em>One result you name yourself.</em></h2>
+        <p class="price"><span class="fig" id="priceFig">$600</span><span class="unit">for four 90-minute sessions</span></p>
+
+        <div class="guarantee">
+          <p><strong>Here is what is guaranteed.</strong> In the first session we find out what you want to change and what that looks, feels and sounds like. Every session is built for the person in the chair. No two sessions look alike, because no two people do. You walk out with change you can point to. That is what I guarantee.</p>
+          <p>Some people get what they came for in the first session and use the other three to go further. Come in expecting the thing you actually want. The tools are yours to keep.</p>
+        </div>
+
+        <div class="cta-row">
+          <a class="btn" href="./induction.html" id="ctaMain">Book a session</a>
+          <a class="btn-quiet" id="emailLink" href="#">Or send a question first</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>Doorways to Change &middot; Trever, certified hypnotherapist</div>
+      <div id="footContact"></div>
+    </div>
+    <div class="bar">
+      <span>Sleep deeper</span><span>Calm your mind</span><span>Wake up better</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONFIG — everything you swap lives here
+   ============================================================ */
+const CONFIG = {
+  BOOKING_URL: "./induction.html",   // the induction page, same folder
+  BOOKING_EMAIL: "doorwaystochange@gmail.com",
+  // Footer links. Delete a line to hide it, add one the same way.
+  SOCIALS: [
+    { label:"Facebook", url:"https://www.facebook.com/share/1bRikzr7Az/" },
+    { label:"YouTube",  url:"https://youtube.com/@doorwaystochange" },
+    { label:"TikTok",   url:"https://www.tiktok.com/@doorwaystochange" }
+  ],
+  PRICE: "$600",
+  PRICE_UNIT: "for four 90-minute sessions",
+
+  // Drop the photo file next to this page and keep the name, or change it here.
+  PHOTO: "./trever.jpg",
+
+  // Certification seals shown small under the About text. Remove one to hide it.
+  BADGES: [
+    { src:"./badge-mmh.png", alt:"Mike Mandel Hypnosis Academy Certified Hypnotist" },
+    { src:"./badge-iha.jpg", alt:"International Hypnosis Association Certified Member" }
+  ],
+
+  // Training line. Shown small, at the bottom of About, on purpose.
+  CREDENTIALS: "Certified through Mike Mandel Hypnosis Academy. Advanced Conversational Hypnosis with Scott Jansen. Certified member of the International Hypnosis Association. Six years of study, still learning.",
+
+  // Reviews. Add files next to this page and list them here.
+  // The whole section stays hidden until there is at least one.
+  REVIEWS: [
+    { who:"Daniel", what:"In his own words", type:"audio", src:"./review-daniel.mp3" }
+    // { who:"Name", what:"Stopping smoking, four sessions", type:"video", src:"./review-name.mp4" }
+  ]
+};
+
+const $ = function(id){ return document.getElementById(id); };
+
+/* ---------- config into the page ---------- */
+$("ctaTop").href = CONFIG.BOOKING_URL;
+$("ctaMain").href = CONFIG.BOOKING_URL;
+$("priceFig").textContent = CONFIG.PRICE;
+document.querySelector(".price .unit").textContent = CONFIG.PRICE_UNIT;
+$("creds").textContent = CONFIG.CREDENTIALS;
+$("emailLink").href = "mailto:" + CONFIG.BOOKING_EMAIL;
+
+const contact = $("footContact");
+const mail = document.createElement("a");
+mail.href = "mailto:" + CONFIG.BOOKING_EMAIL;
+mail.textContent = CONFIG.BOOKING_EMAIL;
+contact.appendChild(mail);
+(CONFIG.SOCIALS || []).forEach(function(sn){
+  if(!sn.url) return;
+  contact.appendChild(document.createTextNode(" \u00B7 "));
+  const a = document.createElement("a");
+  a.href = sn.url; a.textContent = sn.label;
+  a.target = "_blank"; a.rel = "noopener noreferrer";
+  contact.appendChild(a);
+});
+
+/* ---------- portrait: only shows if the file is actually there ---------- */
+const img = $("portraitImg");
+img.onload = function(){ $("aboutGrid").classList.add("has-photo"); };
+img.onerror = function(){ $("portrait").remove(); };
+img.src = CONFIG.PHOTO;
+
+/* ---------- certification seals ---------- */
+(function(){
+  const host = $("badges");
+  (CONFIG.BADGES || []).forEach(function(b){
+    const plate = document.createElement("div");
+    plate.className = "plate";
+    const im = document.createElement("img");
+    im.src = b.src; im.alt = b.alt; im.loading = "lazy";
+    im.onerror = function(){ plate.remove(); };
+    plate.appendChild(im);
+    host.appendChild(plate);
+  });
+})();
+
+/* ---------- reviews ---------- */
+(function(){
+  const list = CONFIG.REVIEWS.filter(function(r){ return r && r.src; });
+  if(!list.length) return;
+  const host = $("reviews");
+  list.forEach(function(r){
+    const box = document.createElement("div");
+    box.className = "review";
+    const who = document.createElement("p");
+    who.className = "who"; who.textContent = r.who;
+    const what = document.createElement("p");
+    what.className = "what"; what.textContent = r.what || "";
+    const media = document.createElement(r.type === "video" ? "video" : "audio");
+    media.controls = true;
+    media.preload = "none";
+    media.src = r.src;
+    if(r.type === "video") media.playsInline = true;
+    box.appendChild(who); box.appendChild(what); box.appendChild(media);
+    host.appendChild(box);
+  });
+  $("proof").hidden = false;
+})();
+
+/* ---------- reveal on scroll ---------- */
+const rises = document.querySelectorAll(".rise");
+if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window){
+  const io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+    });
+  }, {rootMargin:"0px 0px -12% 0px", threshold:0.06});
+  rises.forEach(function(n){ io.observe(n); });
+}else{
+  rises.forEach(function(n){ n.classList.add("in"); });
+}
+
+})();
+</script>
+</body>
+</html>
