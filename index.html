@@ -163,9 +163,9 @@ strong{color:var(--text);font-weight:600}
 .portrait{margin:0;position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line-soft);
   background:var(--deep)}
 .portrait img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;
-  filter:grayscale(1) sepia(.32) contrast(1.04) brightness(.92)}
+  filter:brightness(.97) contrast(1.02) saturate(.98)}
 .portrait::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(242,192,120,.10),rgba(5,6,11,.55));mix-blend-mode:multiply}
+  background:linear-gradient(180deg,transparent 55%,rgba(5,6,11,.42))}
 .creds{margin-top:2.4em;padding-top:1.6em;border-top:1px solid var(--line-soft)}
 .creds p{font-size:.86rem;color:var(--text-faint);margin:0;max-width:34rem}
 .badges{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:1.5em}
@@ -187,6 +187,9 @@ strong{color:var(--text);font-weight:600}
 .guarantee{border-left:1px solid var(--line);padding-left:clamp(16px,3vw,24px);margin:2em 0 2.4em}
 .guarantee p{font-size:.98rem;margin:0 0 .8em}
 .guarantee p:last-child{margin:0}
+.place{margin:1.8em 0 0;font-size:.86rem;color:var(--text-faint)}
+.place a{color:var(--text-dim);text-decoration:none;border-bottom:1px solid var(--line-soft)}
+.place a:hover{color:var(--gold-hi)}
 
 /* ============================================================
    FOOTER
@@ -235,7 +238,7 @@ footer{border-top:1px solid var(--line-soft);padding:3.4em 0 4.4em;margin-top:va
       </div>
       <div class="hero-meta">
         <span><i class="dotmark"></i>90-minute one-on-one sessions</span>
-        <span><i class="dotmark"></i>Stratham, NH, or over Zoom</span>
+        <span><i class="dotmark"></i>In person hosted by Medically Mindful Wellness, Stratham, NH, or over Zoom</span>
       </div>
       <p class="scrollcue">Scroll</p>
     </div>
@@ -331,7 +334,7 @@ footer{border-top:1px solid var(--line-soft);padding:3.4em 0 4.4em;margin-top:va
         <div>
           <p class="lead">I became the help I was looking for and never found.</p>
           <p>That is the honest version. I went looking for something that would actually change how my mind handled things, not just help me cope with it, and I could not find it. So I went and learned it. Now I sit on the other side of the chair, and the person across from me is usually looking for the same thing I was.</p>
-          <p>I work with people in southern New Hampshire, in person in Stratham and over Zoom for everything except trauma resolution. If what you need is not something I can help with, I will say so.</p>
+          <p>I work with people in southern New Hampshire. In person hosted by Medically Mindful Wellness in Stratham, and over Zoom for everything except trauma resolution. If what you need is not something I can help with, I will say so.</p>
           <div class="creds">
             <p id="creds"></p>
             <div class="badges" id="badges"></div>
@@ -358,6 +361,7 @@ footer{border-top:1px solid var(--line-soft);padding:3.4em 0 4.4em;margin-top:va
           <a class="btn" href="./induction.html" id="ctaMain">Book a session</a>
           <a class="btn-quiet" id="emailLink" href="#">Or send a question first</a>
         </div>
+        <p class="place" id="place"></p>
       </div>
     </div>
   </section>
@@ -395,6 +399,10 @@ const CONFIG = {
   PRICE: "$600",
   PRICE_UNIT: "for four 90-minute sessions",
 
+  // In-person location. Set to "" to hide the address line entirely.
+  VENUE: "Medically Mindful Wellness",
+  ADDRESS: "118 Portsmouth Ave B2A, Stratham, NH 03885",
+
   // Drop the photo file next to this page and keep the name, or change it here.
   PHOTO: "./trever.jpg",
 
@@ -424,6 +432,17 @@ $("priceFig").textContent = CONFIG.PRICE;
 document.querySelector(".price .unit").textContent = CONFIG.PRICE_UNIT;
 $("creds").textContent = CONFIG.CREDENTIALS;
 $("emailLink").href = "mailto:" + CONFIG.BOOKING_EMAIL;
+
+if(CONFIG.ADDRESS){
+  const place = $("place");
+  place.appendChild(document.createTextNode("In person hosted by " + (CONFIG.VENUE ? CONFIG.VENUE + ", " : "")));
+  const map = document.createElement("a");
+  map.href = "https://maps.google.com/?q=" + encodeURIComponent((CONFIG.VENUE ? CONFIG.VENUE + " " : "") + CONFIG.ADDRESS);
+  map.textContent = CONFIG.ADDRESS;
+  map.target = "_blank"; map.rel = "noopener noreferrer";
+  place.appendChild(map);
+  place.appendChild(document.createTextNode(". Or over Zoom."));
+}
 
 const contact = $("footContact");
 const mail = document.createElement("a");
